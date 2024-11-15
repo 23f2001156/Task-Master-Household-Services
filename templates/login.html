@@ -1,0 +1,37 @@
+{%extends 'layout.html'%}
+
+{%block title%}
+Login- Task Master Household services
+{%endblock%}
+{%block content%}
+<h1>Login</h1>
+<form method="POST" class="mt-5"> 
+    <label  for="email" class="form-label">Email:
+    <input type="email", name="email",id="email" class="form-control">
+</label><br>
+    <label for="password"class="form-label">Password:
+    <input type="password", name="password",id=password class="form-control">
+
+</label>
+<input type="submit" value="Login" class="btn btn-success">
+</form>
+
+
+
+{%endblock%}
+
+{%block style%}
+<style>
+    form{
+        width: 25%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+
+    }
+    h1{
+        margin-top: 60px;
+        text-align: center;
+    }
+</style>
+{%endblock%}
