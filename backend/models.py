@@ -8,13 +8,13 @@ class Costumer(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     email=db.Column(db.String,nullable=False,unique=True)
     full_name=db.Column(db.String,nullable=False)
-    password=db.Column(db.String(512),nullable=False)
+    password=db.Column(db.String,nullable=False)
     pincode=db.Column(db.String,nullable=False)
     Address=db.Column(db.String)
     role=db.Column(db.Integer,nullable=False,default=1)
+  
     Service_request=db.relationship("Service_request",backref="costumer",lazy=True)
-    
-      
+  
 class Professional(db.Model):
     __tablename__="professional"
     id=db.Column(db.Integer,primary_key=True)
@@ -26,6 +26,8 @@ class Professional(db.Model):
     pincode=db.Column(db.String,nullable=False)
     Description=db.Column(db.String,nullable=False)
     role=db.Column(db.Integer,nullable=False,default=2)
+ 
+      
     Service_request=db.relationship("Service_request",backref="professional",lazy=True)
     
 class Service(db.Model):
@@ -47,5 +49,6 @@ class Service_request(db.Model):
     date_of_completion=db.Column(db.Date,nullable=False)
     status=db.Column(db.Integer,nullable=False,default=0)
     remarks=db.Column(db.String,nullable=False)
+
   
   

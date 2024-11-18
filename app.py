@@ -14,10 +14,25 @@ def init_app():
     Services_app.app_context().push()
     
     db.init_app(Services_app)
+    with Services_app.app_context():
+        db.create_all()
+        
+        admin = Costumer.query.filter_by(role=0).first()
+        if not admin:
+            admin = Costumer(
+                email='admin@gmail.com',
+                password='123',
+                full_name='admin',
+                pincode='283203',
+                Address='Firozabad',
+                role=0
+            )
+            db.session.add(admin)
+            db.session.commit()
     print("A To Z Household Services application Started ")
     return Services_app
 
-
+   
 app=init_app()
 from backend.controllers import *
 

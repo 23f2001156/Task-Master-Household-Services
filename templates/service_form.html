@@ -1,0 +1,62 @@
+{% extends 'layout2.html' %}
+
+{% block title %}
+    Add service
+{% endblock %}
+
+{% block style %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST" action="{{ url_for('add_service_post') }}">
+       
+
+        <div class="form-group">
+            <label for="category">Select Category</label>
+            <select name="category" id="category" class="form-control">
+                <option value="">Select Category</option>
+                <option value="AC_repair">AC repair</option>
+                <option value="plumbering">Plumbing</option>
+                <option value="Cleaning">Cleaning</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="time">Time Required</label>
+            <input type="text" id="time" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-dark">Add Service</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'layout2.html' %}
+
+{% block title %}
+ADMIN DASHBOARD
+{% endblock %}
+
+{% block style %}
+<style>
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #f4f4f4;
+}
+
+#addbtn{
+    margin: 5px;
+    margin-top: 0px;
+}
+
+h1{
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>ADMIN DASHBOARD</h1>
+    <h4>services</h4>
+    <a href="/admin_dashboard/add_service"> <button type="submit" class="btn btn-info" id="addbtn">Add service</button></a>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Time Required</th>
+                
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for service in services%}
+            <tr>
+                <td> {{ service.id }} </td>
+                <td> {{ service.name }} </td>
+                <td> {{ service.Description }} </td>
+                <td> {{ service.price }} </td>
+                <td> {{ service.time_required }} </td>
+
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+
+
+    <h4>Customers List</h4>
+    <button type="submit" class="btn btn-btn" ></button>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Pincode</th>
+                <th>Address</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.full_name }}</td>
+                <td>{{ customer.pincode }}</td>
+                <td>{{ customer.Address }}</td>
+                <td>
+                    <a class="btn btn-primary"href=#>APPROVE</a>
+                    <a class="btn btn-danger"href=#>BLOCK</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h4>Professional List</h4>
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Experience</th>
+            <th>Service Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for professional in professionals%}
+        <tr>
+            <td>{{ professional.id }}</td>
+            <td>{{ professional.full_name }}</td>
+            <td>{{ professional.experience }}</td>
+            <td>{{ professional.service }}</td>
+            <td>
+                <a class="btn btn-primary"href=#>APPROVE</a>
+                <a class="btn btn-danger"href=#>BLOCK</a>
+            </td>
+        </tr>
+        {%endfor%}
+    </tbody>
+
+
+
+
+
+</table>
+
+</div>
+{% endblock %}
