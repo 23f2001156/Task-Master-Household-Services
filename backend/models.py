@@ -12,7 +12,7 @@ class Costumer(db.Model):
     pincode=db.Column(db.String,nullable=False)
     Address=db.Column(db.String)
     role=db.Column(db.Integer,nullable=False,default=1)
-  
+     
     Service_request=db.relationship("Service_request",backref="costumer",lazy=True)
   
 class Professional(db.Model):
@@ -25,6 +25,7 @@ class Professional(db.Model):
     experience=db.Column(db.String,nullable=False)
     pincode=db.Column(db.String,nullable=False)
     Description=db.Column(db.String,nullable=False)
+  
     role=db.Column(db.Integer,nullable=False,default=2)
  
       

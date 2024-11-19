@@ -18,6 +18,7 @@ def home_page():
     return render_template('index.html', csotumer=Costumer.query.get(session['costumer_id']))
 @app.route('/login')
 def login():
+    
     return render_template("login.html")
 
 
@@ -79,32 +80,32 @@ def admin_dashboard():
 
     
     
-@app.route('/admin_dashboard/add_service')
+@app.route('/admin_dashboard/add_service/')
 def add_service():
     return render_template('service_form.html') 
 
 
     
-@app.route('/admin_dashboard/add_service',methods=['POST'])
+@app.route('/admin_dashboard/add_service/',methods=['POST'])
 def add_service_post():
     def add_service_post():
         if 'costumer_id' not in session or session.get('user_role') != 0:
             flash('Unauthorized access')
         return redirect(url_for('login'))
     
-    try:
+    
         
-        name = request.form.get('category')
-        description = request.form.get('description')
-        price = request.form.get('price')
-        time_required = request.form.get('time_required')
+    name = request.form.get('category')
+    description = request.form.get('description')
+    price = request.form.get('price')
+    time_required = request.form.get('time')
         
        
-        if not ([name, price, time_required,description]):
-            flash('All fields are required')
-            return redirect(url_for('add_service'))
+    if not ([name, price, time_required,description]):
+        flash('All fields are required')
+        return redirect(url_for('add_service'))
         
-        else:
+    else:
             new_service = Service(
             name=name,
             Description=description,
@@ -113,14 +114,52 @@ def add_service_post():
         )
         
         
-        db.session.add(new_service)
-        db.session.commit()
+    db.session.add(new_service)
+    db.session.commit()
         
-        flash('Service added successfully')
-        return redirect(url_for('admin_dashboard'))
+    flash('Service added successfully')
+    return redirect(url_for('admin_dashboard'))
         
-    except Exception as e:
-        db.session.rollback()
-        flash('Error adding service. Please try again.')
-        return redirect(url_for('add_service'))
+
      
+@app.route('/admin_dashboard/edit_service/<int:service_id>', methods=['GET', 'POST'])
+def edit_service(service_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
+    
+    service = Service.query.get(service_id)
+    
+    if request.method == 'POST':
+        service.name = request.form.get('category')
+        service.Description = request.form.get('description')
+        service.price = request.form.get('price')
+        service.time_required = request.form.get('time')
+        
+        try:
+            db.session.commit()
+            flash('Service updated successfully')
+            return redirect(url_for('admin_dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Error updating service')
+            return redirect(url_for('admin_dashboard'))
+    
+    return render_template('edit_service.html', service=service)
+
+@app.route('/admin_dashboard/delete_service/<int:service_id>', methods=['POST'])
+def delete_service(service_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
+    
+    service = Service.query.get(service_id)
+    
+    
+    db.session.delete(service)
+    db.session.commit()
+    flash('Service deleted successfully')
+    
+    
+    return redirect(url_for('admin_dashboard'))
+
