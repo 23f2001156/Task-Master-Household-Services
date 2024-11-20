@@ -20,7 +20,9 @@ def home_page():
 def login():
     
     return render_template("login.html")
-
+@app.route('/costumer_dashboard')
+def costumer_dashboard():
+    return render_template('costumer_dashboard.html')
 
 @app.route('/login',methods=["POST"])
 def login_post():
@@ -39,7 +41,7 @@ def login_post():
     
     if customer.role == 0: 
         return redirect(url_for('admin_dashboard'))
-    return redirect(url_for('home_page')) 
+    return redirect(url_for('costumer_dashboard')) 
     
 @app.route('/register')
 def register():
@@ -63,6 +65,51 @@ def register_post():
     db.session.commit()
     flash('User Successfully Registered')
     return redirect(url_for('login'))
+@app.route('/professional_login')
+def professional_login():
+    return render_template('professional_login.html')
+
+
+@app.route('/professional_login',methods=["POST"])
+def professional_login_post():
+    email = request.form.get('email')
+    password = request.form.get("password")
+    professional = Professional.query.filter_by(email=email, password=password).first()
+    
+    if not professional:
+        flash('Either password is wrong or user does not exist')
+        return redirect(url_for('professional_login'))
+        
+   
+    
+    
+    
+   
+    return redirect(url_for('home_page')) 
+@app.route('/professional_signup')
+def professional_signup():
+    return render_template("professional_signup.html")
+@app.route('/professional_signup',methods=['POST'])
+def professional_signup_post():
+    email=request.form.get('email')
+    password=request.form.get('password')
+    full_name=request.form.get('full_name')
+    pincode=request.form.get('pincode')
+    Description=request.form.get('Description')
+    service_name=request.form.get('service_name')
+    experience=request.form.get('experience')
+    if email=='' or password=='':
+        flash("Email or password cannot be empty")
+        return redirect(url_for('professional_signup'))
+    if Professional.query.filter_by(email=email).first():
+        flash('User already Exist')
+        return redirect(url_for('professional_signup'))
+    professional=Professional(email=email,password=password,full_name=full_name,pincode=pincode, Description= Description,service=service_name,experience=experience)
+    db.session.add(professional)
+    
+    db.session.commit()
+    flash('Service Professional Successfully Registered')
+    return redirect(url_for('professional_login'))
 
 @app.route('/logout')
 def logout():

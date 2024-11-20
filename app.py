@@ -29,7 +29,7 @@ def init_app():
             )
             db.session.add(admin)
             db.session.commit()
-    print("A To Z Household Services application Started ")
+    print("TaskMaster Household Services application Started ")
     return Services_app
 
    

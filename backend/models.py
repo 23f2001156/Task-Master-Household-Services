@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import check_password_hash,generate_password_hash
+
 db=SQLAlchemy()
 
 
@@ -12,7 +12,7 @@ class Costumer(db.Model):
     pincode=db.Column(db.String,nullable=False)
     Address=db.Column(db.String)
     role=db.Column(db.Integer,nullable=False,default=1)
-     
+    is_blocked = db.Column(db.Boolean, default=False)  
     Service_request=db.relationship("Service_request",backref="costumer",lazy=True)
   
 class Professional(db.Model):
@@ -25,7 +25,8 @@ class Professional(db.Model):
     experience=db.Column(db.String,nullable=False)
     pincode=db.Column(db.String,nullable=False)
     Description=db.Column(db.String,nullable=False)
-  
+    is_approved = db.Column(db.Boolean, default=False) 
+    is_rejected= db.Column(db.Boolean, default=False) 
     role=db.Column(db.Integer,nullable=False,default=2)
  
       
@@ -48,8 +49,6 @@ class Service_request(db.Model):
     professional_id=db.Column(db.Integer,db.ForeignKey("professional.id"),nullable=False)
     date_of_request=db.Column(db.Date,nullable=False)
     date_of_completion=db.Column(db.Date,nullable=False)
-    status=db.Column(db.Integer,nullable=False,default=0)
+    status=db.Column(db.Integer,nullable=False,default='Requested')
     remarks=db.Column(db.String,nullable=False)
-
-  
-  
+    Rating=db.Column(db.Integer)
