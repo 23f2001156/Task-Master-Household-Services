@@ -47,6 +47,7 @@ class Service_request(db.Model):
     service_id=db.Column(db.Integer,db.ForeignKey("service.id"),nullable=False)
     costumer_id=db.Column(db.Integer,db.ForeignKey("costumer.id"),nullable=False)
     professional_id=db.Column(db.Integer,db.ForeignKey("professional.id"),nullable=False)
+    
     date_of_request=db.Column(db.Date,nullable=False)
     date_of_completion=db.Column(db.Date,nullable=False)
     status=db.Column(db.Integer,nullable=False,default='Requested')

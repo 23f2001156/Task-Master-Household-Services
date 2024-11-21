@@ -1,0 +1,46 @@
+{% extends 'layout2.html'%}
+{%block title%}
+AC repair
+{%endblock%}
+{%block content%}
+<h2>Available Services</h2>
+<table class="table">
+      <thead class="thead-dark"></thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Category</th>
+        <th scope="col">Description</th>
+        <th scope="col">Price</th>
+        <th scope="col">Time Required</th>
+        <th scope="col">Book</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for service in services%}
+      <tr>
+      <td>{{service.id}}</td>
+      <td>{{service.name}}</td>
+      <td>{{service.Description}}</td>
+      <td>{{service.Price}}</td>
+      <td>{{service.time_required}}</td>
+      <td>
+        <a href="#" class="btn btn-primary">Book </a>
+      </td></tr>
+      {%endfor%}
+    </tbody>
+  </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{%endblock%}

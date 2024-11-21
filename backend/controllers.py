@@ -19,10 +19,10 @@ def home_page():
 @app.route('/login')
 def login():
     
-    return render_template("login.html")
+    return render_template("/costumer/login.html")
 @app.route('/costumer_dashboard')
 def costumer_dashboard():
-    return render_template('costumer_dashboard.html')
+    return render_template('/costumer/costumer_dashboard.html')
 
 @app.route('/login',methods=["POST"])
 def login_post():
@@ -45,7 +45,7 @@ def login_post():
     
 @app.route('/register')
 def register():
-    return render_template("register.html")
+    return render_template("/costumer/register.html")
 @app.route('/register',methods=['POST'])
 def register_post():
     email=request.form.get('email')
@@ -67,7 +67,7 @@ def register_post():
     return redirect(url_for('login'))
 @app.route('/professional_login')
 def professional_login():
-    return render_template('professional_login.html')
+    return render_template('/professional/professional_login.html')
 
 
 @app.route('/professional_login',methods=["POST"])
@@ -88,7 +88,7 @@ def professional_login_post():
     return redirect(url_for('home_page')) 
 @app.route('/professional_signup')
 def professional_signup():
-    return render_template("professional_signup.html")
+    return render_template("/professional/professional_signup.html")
 @app.route('/professional_signup',methods=['POST'])
 def professional_signup_post():
     email=request.form.get('email')
@@ -115,21 +115,50 @@ def professional_signup_post():
 def logout():
     session.pop('costumer_id', None)
     
-@app.route('/profile')
-def profile():
-    return render_template('profile.html')
+
 @app.route('/admin_dashboard')
 def admin_dashboard():
     customers = Costumer.query.filter_by(role=1)
-    professionals=Professional.query.all()
+    professionals=Professional.query.filter_by(is_approved=False)
     services=Service.query.all()
-    return render_template('admin_dashboard.html', customers=customers,professionals=professionals,services=services)
+    approved_professionals=Professional.query.filter_by(is_approved=True)
+    return render_template('/admin/admin_dashboard.html', customers=customers,professionals=professionals,services=services,approved_professionals=approved_professionals)
 
     
+@app.route('/admin_dashboard/approve_professional/<int:prof_id>', methods=['POST'])
+def approve_professional(prof_id):
+    prof = Professional.query.get(prof_id)
+    if prof:
+        prof.is_approved = True
+        prof.is_rejected = False
+        db.session.commit()
+        flash("Service Professional  approved")
     
+        
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin_dashboard/reject_professional/<int:prof_id>', methods=['POST'])
+def reject_professional(prof_id):
+    prof = Professional.query.get(prof_id)
+    if prof and prof.is_rejected==False:
+        prof.is_rejected = True
+        prof.is_approved = False
+        db.session.commit()
+        flash(" Service Professional rejected")
+    
+    return redirect(url_for('admin_dashboard'))
+@app.route('/admin_dashboard/block_costumer/<int:costumer_id>',methods=['POST'])
+def block_costumer(costumer_id):
+    costumer=Costumer.query.get(costumer_id)
+    if costumer :
+        costumer.is_blocked=True
+        db.session.commit()
+        flash("Costumer Blocked Successfully")
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin_dashboard/add_service/')
 def add_service():
-    return render_template('service_form.html') 
+    return render_template('/admin/service_form.html') 
 
 
     
@@ -192,7 +221,7 @@ def edit_service(service_id):
             flash('Error updating service')
             return redirect(url_for('admin_dashboard'))
     
-    return render_template('edit_service.html', service=service)
+    return render_template('/admin/edit_service.html', service=service)
 
 @app.route('/admin_dashboard/delete_service/<int:service_id>', methods=['POST'])
 def delete_service(service_id):
@@ -209,4 +238,20 @@ def delete_service(service_id):
     
     
     return redirect(url_for('admin_dashboard'))
+
+
+
+
+@app.route('/costumer_dashboard/ac_repair')
+def ac_repair():
+    ac_repair_services = Service.query.filter_by(name='AC repair').all()
+    return render_template('/costumer/ac_repair.html',services=ac_repair_services)
+@app.route('/costumer_dashboard/cleaning')
+def cleannig():
+    cleaning_services=Service.query.filter_by(name='Cleaning').all()
+    return render_template('/costumer/cleaning.html',services=cleaning_services)
+@app.route('/costumer_dashboard/plumbing')
+def plumbing():
+    plumbing_service=Service.query.filter_by(name='Plumbing')
+    return render_template('/costumer/plumbing.html',services=plumbing_service)
 

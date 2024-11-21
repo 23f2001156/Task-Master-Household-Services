@@ -70,7 +70,7 @@ h1{
 
 
     <h4>Customers List</h4>
-    <button type="submit" class="btn btn-btn" ></button>
+   
     
     <table class="admin-table">
         <thead>
@@ -90,14 +90,16 @@ h1{
                 <td>{{ customer.pincode }}</td>
                 <td>{{ customer.Address }}</td>
                 <td>
-                    <a class="btn btn-primary"href=#>APPROVE</a>
-                    <a class="btn btn-danger"href=#>BLOCK</a>
+                    
+                    <form action="{{ url_for('block_costumer', costumer_id=customer.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">BLOCK</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <h4>Professional List</h4>
+    <h4> Unverified Professional List</h4>
 <table class="admin-table">
     <thead>
         <tr>
@@ -116,15 +118,41 @@ h1{
             <td>{{ professional.experience }}</td>
             <td>{{ professional.service }}</td>
             <td>
-                <a class="btn btn-primary"href=#>APPROVE</a>
-                <a class="btn btn-danger"href=#>REJECT</a>
+                <form action="{{ url_for('approve_professional', prof_id=professional.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-primary">APPROvE</button>
+                </form>
+                <form action="{{ url_for('reject_professional', prof_id=professional.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">REJECT</button>
+                </form>
             </td>
         </tr>
         {%endfor%}
     </tbody>
-
-
-
+</table>
+<h4>Approved Professionals</h4>
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Experience</th>
+            <th>Service Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for professional in approved_professionals%}
+        <tr>
+            <td>{{ professional.id }}</td>
+            <td>{{ professional.full_name }}</td>
+            <td>{{ professional.experience }}</td>
+            <td>{{ professional.service }}</td>
+            <td>
+               <button class="btn btn-success">Block</button>
+            </td>
+        </tr>
+        {%endfor%}
+    </tbody>
 
 
 </table>
