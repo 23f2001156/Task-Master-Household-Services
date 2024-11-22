@@ -91,9 +91,16 @@ h1{
                 <td>{{ customer.Address }}</td>
                 <td>
                     
+                    {% if customer.is_blocked %}
+                    <button class="btn btn-secondary" disabled>Blocked</button>
+                    <form action="{{ url_for('unblock_costumer', costumer_id=customer.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-success">UNBLOCK</button>
+                    </form>
+                    {% else %}
                     <form action="{{ url_for('block_costumer', costumer_id=customer.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn btn-danger">BLOCK</button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -147,9 +154,17 @@ h1{
             <td>{{ professional.full_name }}</td>
             <td>{{ professional.experience }}</td>
             <td>{{ professional.service }}</td>
-            <td>
-               <button class="btn btn-success">Block</button>
-            </td>
+           <td>
+            {% if not professional.is_active %}
+            <button class="btn btn-secondary" disabled>Blocked</button>
+            <form action="{{ url_for('unblock_professional', prof_id=professional.id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-success">UNBLOCK</button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('block_professional', prof_id=professional.id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger">BLOCK</button>
+            </form>
+            {% endif %}</td>
         </tr>
         {%endfor%}
     </tbody>

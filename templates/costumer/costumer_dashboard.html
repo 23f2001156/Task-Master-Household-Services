@@ -50,13 +50,33 @@ h1{
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">id</th>
-      <th scope="col">Costumer Name</th>
-      <th scope="col">Service Name</th>
-      <th scope="col">Date of Completion</th>
-      <th scope="col">Status</th>
-      <th scope="col">Action</th>
+      <th>Service</th>
+      <th>Professional</th>
+      <th>Request Date</th>
+      <th>Completion Date</th>
+      <th>Status</th>
+      <th>Remarks</th>
+      <th>Rating</th>
+  </tr> <tbody>
+    {% for request in service_requests %}
+    <tr>
+        <td>{{ request.service.name }}</td>
+        <td>{{ request.professional.full_name }}</td>
+        <td>{{ request.date_of_request }}</td>
+        <td>{{ request.date_of_completion }}</td>
+        <td>{{ request.status }}</td>
+        <td>{{ request.remarks }}</td>
+        <td>
+            {% if request.rating %}
+                {{ request.rating }}/5
+            {% else %}
+                Not Rated
+            {% endif %}
+        </td>
     </tr>
+    {% endfor %}
+</tbody>
+
   </thead> 
   <tbody>
 

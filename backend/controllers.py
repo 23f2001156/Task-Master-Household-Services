@@ -9,7 +9,7 @@ from app import *
 from functools import wraps
 
 
-
+from datetime  import datetime ,timedelta
 
 @app.route('/')
 def home_page():
@@ -22,6 +22,7 @@ def login():
     return render_template("/costumer/login.html")
 @app.route('/costumer_dashboard')
 def costumer_dashboard():
+   
     return render_template('/costumer/costumer_dashboard.html')
 
 @app.route('/login',methods=["POST"])
@@ -140,13 +141,29 @@ def approve_professional(prof_id):
 @app.route('/admin_dashboard/reject_professional/<int:prof_id>', methods=['POST'])
 def reject_professional(prof_id):
     prof = Professional.query.get(prof_id)
-    if prof and prof.is_rejected==False:
-        prof.is_rejected = True
-        prof.is_approved = False
+    if prof:
+        db.session.delete(prof)
         db.session.commit()
-        flash(" Service Professional rejected")
+        flash("Service Professional rejected ")
     
     return redirect(url_for('admin_dashboard'))
+@app.route('/admin_dashboard/block_professional/<int:prof_id>',methods=['POST'])
+def block_professional(prof_id):
+    professional=Professional.query.get(prof_id)
+    if professional :
+        professional.is_active=False
+        db.session.commit()
+        flash("prof Blocked Successfully")
+    return redirect(url_for('admin_dashboard'))
+@app.route('/admin_dashboard/unblock_professional/<int:prof_id>',methods=['POST'])
+def unblock_professional(prof_id):
+    professional=Professional.query.get(prof_id)
+    if professional:
+        professional.is_active=True
+        db.session.commit()
+        flash("prof unblocked Successfully")
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin_dashboard/block_costumer/<int:costumer_id>',methods=['POST'])
 def block_costumer(costumer_id):
     costumer=Costumer.query.get(costumer_id)
@@ -154,6 +171,15 @@ def block_costumer(costumer_id):
         costumer.is_blocked=True
         db.session.commit()
         flash("Costumer Blocked Successfully")
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin_dashboard/unblock_costumer/<int:costumer_id>',methods=['POST'])
+def unblock_costumer(costumer_id):
+    costumer=Costumer.query.get(costumer_id)
+    if costumer:
+        costumer.is_blocked=False
+        db.session.commit()
+        flash("Costumer UNBlocked Successfully")
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin_dashboard/add_service/')
@@ -244,7 +270,7 @@ def delete_service(service_id):
 
 @app.route('/costumer_dashboard/ac_repair')
 def ac_repair():
-    ac_repair_services = Service.query.filter_by(name='AC repair').all()
+    ac_repair_services = Service.query.filter_by(name='AC_repair').all()
     return render_template('/costumer/ac_repair.html',services=ac_repair_services)
 @app.route('/costumer_dashboard/cleaning')
 def cleannig():
@@ -252,6 +278,46 @@ def cleannig():
     return render_template('/costumer/cleaning.html',services=cleaning_services)
 @app.route('/costumer_dashboard/plumbing')
 def plumbing():
-    plumbing_service=Service.query.filter_by(name='Plumbing')
+    plumbing_service=Service.query.filter_by(name='plumbering')
     return render_template('/costumer/plumbing.html',services=plumbing_service)
 
+@app.route('/costumer_dashboard/book_service/<int:service_id>')
+def book_service(service_id):
+    if 'costumer_id' not in session:
+        flash('Please login first')
+        return redirect(url_for('login'))
+    
+    service = Service.query.get(service_id)
+   
+    professionals = Professional.query.filter_by(service=service.name, is_approved=True, is_active=True).all()
+    
+    return render_template('/costumer/book_service.html', service=service, professionals=professionals)
+
+@app.route('/book_service_post', methods=['POST'])
+def book_service_post():
+    if 'costumer_id' not in session:
+        flash('Please login first')
+        return redirect(url_for('login'))
+    
+    service_id = request.form.get('service_id')
+    professional_id = request.form.get('professional_id')
+    remarks = request.form.get('remarks')
+    date_of_request = datetime.now().date()
+    
+  
+    
+    new_request = Service_request(
+        service_id=service_id,
+        costumer_id=session['costumer_id'],
+        professional_id=professional_id,
+        date_of_request=date_of_request,
+        
+        status='Requested',
+        remarks=remarks
+    )
+    
+    db.session.add(new_request)
+    db.session.commit()
+    
+    flash('Service request submitted successfully')
+    return redirect(url_for('costumer_dashboard'))

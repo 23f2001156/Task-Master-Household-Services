@@ -24,7 +24,7 @@ Plumbing
       <td>{{service.Price}}</td>
       <td>{{service.time_required}}</td>
       <td>
-        <a href="#" class="btn btn-primary">Book </a>
+        <a href="{{ url_for('book_service', service_id=service.id) }}" class="btn btn-primary">Book</a>
       </td></tr>
       {%endfor%}
     </tbody>

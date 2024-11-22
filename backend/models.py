@@ -26,7 +26,8 @@ class Professional(db.Model):
     pincode=db.Column(db.String,nullable=False)
     Description=db.Column(db.String,nullable=False)
     is_approved = db.Column(db.Boolean, default=False) 
-    is_rejected= db.Column(db.Boolean, default=False) 
+    is_rejected= db.Column(db.Boolean, default=False)
+    is_active=db.Column(db.Boolean, default=True)
     role=db.Column(db.Integer,nullable=False,default=2)
  
       
@@ -49,7 +50,7 @@ class Service_request(db.Model):
     professional_id=db.Column(db.Integer,db.ForeignKey("professional.id"),nullable=False)
     
     date_of_request=db.Column(db.Date,nullable=False)
-    date_of_completion=db.Column(db.Date,nullable=False)
-    status=db.Column(db.Integer,nullable=False,default='Requested')
+    date_of_completion=db.Column(db.Date)
+    status=db.Column(db.String,nullable=False,default='Requested')
     remarks=db.Column(db.String,nullable=False)
-    Rating=db.Column(db.Integer)
+    rating=db.Column(db.Integer)
