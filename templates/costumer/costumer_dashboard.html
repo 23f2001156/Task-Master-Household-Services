@@ -45,45 +45,71 @@ h1{
       </div>
     </div>
   </div>
-
+<div >
 <h3>Service History</h3>
-<table class="table">
-  <thead class="thead-dark">
-    <tr>
-      <th>Service</th>
-      <th>Professional</th>
-      <th>Request Date</th>
-      <th>Completion Date</th>
-      <th>Status</th>
-      <th>Remarks</th>
-      <th>Rating</th>
-  </tr> <tbody>
-    {% for request in service_requests %}
-    <tr>
-        <td>{{ request.service.name }}</td>
-        <td>{{ request.professional.full_name }}</td>
-        <td>{{ request.date_of_request }}</td>
-        <td>{{ request.date_of_completion }}</td>
-        <td>{{ request.status }}</td>
-        <td>{{ request.remarks }}</td>
-        <td>
-            {% if request.rating %}
-                {{ request.rating }}/5
-            {% else %}
-                Not Rated
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-
-  </thead> 
+<table class="table table-striped">
+  <thead>
+      <tr>
+          <th>Service ID</th>
+          <th>Professional</th>
+          <th>Request Date</th>
+          <th>Completion Date</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Rating</th>
+      </tr>
+  </thead>
   <tbody>
-
+      {% for request in service_requests %}
+      <tr>
+          <td>{{ request.service_id }}</td>
+          <td>{{ request.professional.full_name }}</td>
+          <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+          <td>{{ request.date_of_completion.strftime('%Y-%m-%d') if request.date_of_completion else 'Pending' }}</td>
+          <td>
+              <span class="badge {% if request.status == 'Completed' %}bg-info
+              {% elif request.status == 'Requested' %}bg-warning
+              {% elif request.status == 'Rejected' %}bg-danger
+              {% else %}bg-success{% endif %}">
+                  {{ request.status }}
+              </span>
+          </td>
+          <td>
+            {% if request.status == 'Accepted' %}
+            <form action="{{ url_for('complete_service_request', request_id=request.id) }}" method="POST">
+                <button type="submit" class="btn btn-success">Mark as Completed</button>
+            </form>
+        {% endif %}
+        </td><td>
+              {% if request.rating %}
+                  {{ request.rating }} / 5
+              {% else %}
+                  {% if request.status == 'Completed' %}
+                      <form action="/rate_service/{{ request.id }}" method="POST" class="d-inline">
+                          <select name="rating" class="form-select form-select-sm" required>
+                              <option value="">Rate</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                          </select>
+                          <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                      </form>
+                  {% else %}
+                      No Rating Given
+                  {% endif %}
+              {% endif %}
+          </td>
+      </tr>
+      {% endfor %}
   </tbody>
- 
+</table>
+
+  
+ </div>
    
     
-</table>
+
       
 {%endblock%}

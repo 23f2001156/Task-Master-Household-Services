@@ -1,0 +1,83 @@
+{% extends 'layout2.html' %}
+{% block title %}Professional Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Professional Dashboard</h2>
+    <h4>New Service Request</h4>
+    <table class="table">
+    <thead>
+ <tr>
+<th>Request ID</th>
+<th>Service</th>
+<th>Customer</th>
+<th>Date Requested</th>
+<th>Customer Address</th> 
+<th>Remarks</th>
+                           
+<th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for request in service_requests %}
+        {% if request.status == 'Requested' %}
+                                <tr>
+                                <td>{{ request.id }}</td>
+                                <td>{{ request.service.name }}</td>
+                                <td>{{ request.costumer.full_name }}</td>
+                                <td>{{ request.date_of_request }}</td>
+                                <td>{{ request.costumer.Address }}</td>
+                                <td>{{ request.remarks }}</td>
+                                <td>
+                                    <form action="{{ url_for('accept_service_request', request_id=request.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-success">Accept</button>
+                                    </form>
+                                    <form action="{{ url_for('reject_service_request', request_id=request.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-danger">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+    <h4>Closed Services</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Service</th>
+                <th>Customer</th>
+                <th>Request Date</th>
+                <th>Completion Date</th>
+                <th>Customer Address</th>
+                <th>Rating</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in service_requests %}
+                {% if request.status == 'Completed' %}
+                <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.service.name }}</td>
+                    <td>{{ request.costumer.full_name }}</td>
+                    <td>{{ request.date_of_request }}</td>
+                    <td>{{ request.date_of_completion }}</td>
+                    <td>{{ request.costumer.Address }}</td>
+                    <td>
+                        {% if request.rating %}
+                            {{ request.rating }} / 5
+                        {% else %}
+                            Not rated
+                        {% endif %}
+                    </td>
+                    <td>{{ request.remarks }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{%endblock%}

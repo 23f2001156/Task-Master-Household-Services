@@ -22,8 +22,10 @@ def login():
     return render_template("/costumer/login.html")
 @app.route('/costumer_dashboard')
 def costumer_dashboard():
-   
-    return render_template('/costumer/costumer_dashboard.html')
+    service_requests = Service_request.query.filter_by(
+        costumer_id=session['costumer_id']
+    ).all()
+    return render_template('/costumer/costumer_dashboard.html',service_requests=service_requests)
 
 @app.route('/login',methods=["POST"])
 def login_post():
@@ -81,12 +83,14 @@ def professional_login_post():
         flash('Either password is wrong or user does not exist')
         return redirect(url_for('professional_login'))
         
-   
+    session['professional_id'] = professional.id
+    session['user_role'] = professional.role
     
     
     
    
-    return redirect(url_for('home_page')) 
+    return redirect(url_for('professional_dashboard')) 
+
 @app.route('/professional_signup')
 def professional_signup():
     return render_template("/professional/professional_signup.html")
@@ -114,11 +118,17 @@ def professional_signup_post():
 
 @app.route('/logout')
 def logout():
-    session.pop('costumer_id', None)
+    #
+    session.clear()
+    flash('You have been logged out successfully')
+    return redirect(url_for('home_page'))
     
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     customers = Costumer.query.filter_by(role=1)
     professionals=Professional.query.filter_by(is_approved=False)
     services=Service.query.all()
@@ -128,6 +138,9 @@ def admin_dashboard():
     
 @app.route('/admin_dashboard/approve_professional/<int:prof_id>', methods=['POST'])
 def approve_professional(prof_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     prof = Professional.query.get(prof_id)
     if prof:
         prof.is_approved = True
@@ -140,6 +153,9 @@ def approve_professional(prof_id):
 
 @app.route('/admin_dashboard/reject_professional/<int:prof_id>', methods=['POST'])
 def reject_professional(prof_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     prof = Professional.query.get(prof_id)
     if prof:
         db.session.delete(prof)
@@ -149,6 +165,9 @@ def reject_professional(prof_id):
     return redirect(url_for('admin_dashboard'))
 @app.route('/admin_dashboard/block_professional/<int:prof_id>',methods=['POST'])
 def block_professional(prof_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     professional=Professional.query.get(prof_id)
     if professional :
         professional.is_active=False
@@ -157,6 +176,9 @@ def block_professional(prof_id):
     return redirect(url_for('admin_dashboard'))
 @app.route('/admin_dashboard/unblock_professional/<int:prof_id>',methods=['POST'])
 def unblock_professional(prof_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     professional=Professional.query.get(prof_id)
     if professional:
         professional.is_active=True
@@ -166,6 +188,9 @@ def unblock_professional(prof_id):
 
 @app.route('/admin_dashboard/block_costumer/<int:costumer_id>',methods=['POST'])
 def block_costumer(costumer_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     costumer=Costumer.query.get(costumer_id)
     if costumer :
         costumer.is_blocked=True
@@ -175,6 +200,9 @@ def block_costumer(costumer_id):
 
 @app.route('/admin_dashboard/unblock_costumer/<int:costumer_id>',methods=['POST'])
 def unblock_costumer(costumer_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     costumer=Costumer.query.get(costumer_id)
     if costumer:
         costumer.is_blocked=False
@@ -184,6 +212,9 @@ def unblock_costumer(costumer_id):
 
 @app.route('/admin_dashboard/add_service/')
 def add_service():
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
     return render_template('/admin/service_form.html') 
 
 
@@ -270,15 +301,47 @@ def delete_service(service_id):
 
 @app.route('/costumer_dashboard/ac_repair')
 def ac_repair():
-    ac_repair_services = Service.query.filter_by(name='AC_repair').all()
-    return render_template('/costumer/ac_repair.html',services=ac_repair_services)
+    ac_repair_services = Service.query.filter_by(name='AC repair').all() 
+    available_professionals = Professional.query.filter_by(
+        service='AC_repair',
+        is_approved=True,
+        is_active=True
+    ).first()
+    
+    if not available_professionals:
+        flash('No service professionals are currently available for AC repair at this moment. Please try again later.')
+        return redirect(url_for('costumer_dashboard'))
+        
+    return render_template('/costumer/ac_repair.html', services=ac_repair_services)
+
+    
 @app.route('/costumer_dashboard/cleaning')
 def cleannig():
     cleaning_services=Service.query.filter_by(name='Cleaning').all()
+    available_professionals = Professional.query.filter_by(
+        service='Cleaning',
+        is_approved=True,
+        is_active=True
+    ).first()
+    
+    if not available_professionals:
+        flash('No service professionals are currently available for Cleaning Service at this moment. Please try again later.')
+        return redirect(url_for('costumer_dashboard'))
     return render_template('/costumer/cleaning.html',services=cleaning_services)
 @app.route('/costumer_dashboard/plumbing')
 def plumbing():
+    
+      
     plumbing_service=Service.query.filter_by(name='plumbering')
+    available_professionals = Professional.query.filter_by(
+        service='plumbering',
+        is_approved=True,
+        is_active=True
+    ).first()
+    
+    if not available_professionals:
+        flash('No service professionals are currently available for Plumbing Service at this moment. Please try again later.')
+        return redirect(url_for('costumer_dashboard'))
     return render_template('/costumer/plumbing.html',services=plumbing_service)
 
 @app.route('/costumer_dashboard/book_service/<int:service_id>')
@@ -320,4 +383,60 @@ def book_service_post():
     db.session.commit()
     
     flash('Service request submitted successfully')
+    return redirect(url_for('costumer_dashboard'))
+
+
+
+@app.route('/professional_dashboard')
+def professional_dashboard():
+    if 'professional_id' not in session:
+        flash('Please login first')
+        return redirect(url_for('professional_login'))
+        
+    
+    service_requests = Service_request.query.filter_by(
+        professional_id=session['professional_id']
+    ).all()
+    
+    return render_template('/professional/professional_dashboard.html', service_requests=service_requests)
+
+@app.route('/accept_service_request/<int:request_id>', methods=['POST'])
+def accept_service_request(request_id):
+   
+        
+    service_request = Service_request.query.get(request_id)
+    if service_request and service_request.professional_id == session['professional_id']:
+        service_request.status = 'Accepted'
+        db.session.commit()
+        flash('Service request accepted')
+   
+    
+    return redirect(url_for('professional_dashboard'))
+
+@app.route('/reject_service_request/<int:request_id>', methods=['POST'])
+def reject_service_request(request_id):
+  
+        
+    service_request = Service_request.query.get(request_id)
+    if service_request and service_request.professional_id == session['professional_id']:
+        service_request.status = 'Rejected'
+        db.session.commit()
+        flash('Service request Rejected')
+    
+    
+    return redirect(url_for('professional_dashboard'))
+
+@app.route('/complete_service_request/<int:request_id>', methods=['POST'])
+def complete_service_request(request_id):
+   
+        
+    service_request = Service_request.query.get(request_id)
+    if service_request and service_request.costumer_id == session['costumer_id']:
+        service_request.status = 'Completed'
+        service_request.date_of_completion = datetime.now().date()
+        db.session.commit()
+        flash('Service request marked as complete')
+    else:
+        flash('Invalid request')
+    
     return redirect(url_for('costumer_dashboard'))

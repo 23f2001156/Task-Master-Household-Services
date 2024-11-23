@@ -50,7 +50,9 @@ class Service_request(db.Model):
     professional_id=db.Column(db.Integer,db.ForeignKey("professional.id"),nullable=False)
     
     date_of_request=db.Column(db.Date,nullable=False)
+    preferred_date=db.Column(db.Date)
     date_of_completion=db.Column(db.Date)
     status=db.Column(db.String,nullable=False,default='Requested')
-    remarks=db.Column(db.String,nullable=False)
+    remarks=db.Column(db.String)
     rating=db.Column(db.Integer)
+    review=db.Column(db.String)
