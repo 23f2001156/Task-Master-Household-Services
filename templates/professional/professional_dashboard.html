@@ -53,11 +53,13 @@
                 <th>Customer Address</th>
                 <th>Rating</th>
                 <th>Remarks</th>
+                
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             {% for request in service_requests %}
-                {% if request.status == 'Completed' %}
+                {% if request.status == 'Completed' or request.status == 'Rejected'  %}
                 <tr>
                     <td>{{ request.id }}</td>
                     <td>{{ request.service.name }}</td>
@@ -73,6 +75,13 @@
                         {% endif %}
                     </td>
                     <td>{{ request.remarks }}</td>
+                    
+                    
+                    
+                        <td>{{request.status}}
+                        
+                    </td>
+
                 </tr>
                 {% endif %}
             {% endfor %}

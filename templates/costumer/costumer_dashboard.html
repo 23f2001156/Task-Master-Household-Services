@@ -56,7 +56,10 @@ h1{
           <th>Completion Date</th>
           <th>Status</th>
           <th>Remarks</th>
+          
+          <th>Close Request</th>
           <th>Rating</th>
+          
       </tr>
   </thead>
   <tbody>
@@ -73,7 +76,7 @@ h1{
               {% else %}bg-success{% endif %}">
                   {{ request.status }}
               </span>
-          </td>
+          </td><td>{{request.remarks}}</td>
           <td>
             {% if request.status == 'Accepted' %}
             <form action="{{ url_for('complete_service_request', request_id=request.id) }}" method="POST">
@@ -81,28 +84,20 @@ h1{
             </form>
         {% endif %}
         </td><td>
-              {% if request.rating %}
-                  {{ request.rating }} / 5
-              {% else %}
-                  {% if request.status == 'Completed' %}
-                      <form action="/rate_service/{{ request.id }}" method="POST" class="d-inline">
-                          <select name="rating" class="form-select form-select-sm" required>
-                              <option value="">Rate</option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                          </select>
-                          <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-                      </form>
-                  {% else %}
-                      No Rating Given
-                  {% endif %}
+            
+          {% if request.status == 'Completed' %}
+          {% if not request.rating %}
+            <a href="{{ url_for('rate_service', request_id=request.id) }}" class="btn btn-primary btn-sm">Rate</a>
+          {% else %}
+            <button class="btn btn-secondary btn-sm" disabled>Already Rated</button>
+          {% endif %}
+        
+                  
               {% endif %}
           </td>
-      </tr>
+          
       {% endfor %}
+      
   </tbody>
 </table>
 

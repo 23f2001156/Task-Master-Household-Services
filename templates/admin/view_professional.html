@@ -1,0 +1,21 @@
+{% extends 'layout2.html' %}
+{%block title%}
+View Professional Details
+{%endblock%}
+{%block content%}
+<div id="view">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+         
+          <strong><h3>Details of {{professional.full_name}}</h3></strong>
+          <p><strong>Full Name:</strong> {{ professional.full_name }}</p>
+          <p><strong>Email:</strong> {{ professional.email }}</p>
+          <p><strong>Service:</strong> {{ professional.service }}</p>
+          <p><strong>Experience:</strong> {{ professional.experience }}</p>
+          <p><strong>Pincode:</strong> {{ professional.pincode }}</p>
+          <p><strong>Description:</strong> {{ professional.Description }}</p>
+        </div>
+      </div>
+</div>
+
+{%endblock%}

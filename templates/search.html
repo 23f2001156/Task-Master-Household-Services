@@ -1,0 +1,79 @@
+{% extends "layout2.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Search Results for "{{ query }}"</h2>
+            <p class="text-muted">
+                Category: 
+                {% if search_by == 'all' %}
+                    All Categories
+                {% elif search_by == 'services' %}
+                    Services Only
+                {% elif search_by == 'professionals' %}
+                    Professionals Only
+                {% elif search_by == 'location' %}
+                    By Location
+               
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if not services and not professionals %}
+        <div class="alert alert-info">
+            No results found for your search{% if search_by != 'all' %} in the selected category{% endif %}.
+        </div>
+    {% endif %}
+    
+    {% if services %}
+    <div class="mb-4">
+        <h3>Services</h3>
+        <div class="row">
+            {% for service in services %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        <p class="card-text">{{ service.Description }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Price: ₹{{ service.price }} | Time: {{ service.time_required }}
+                            </small>
+                        </p>
+                        <a href="{{ url_for('book_service', service_id=service.id) }}" class="btn btn-primary">Book Service</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if professionals %}
+    <div>
+        <h3>Service Professionals</h3>
+        <div class="row">
+            {% for professional in professionals %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ professional.full_name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ professional.service }}</h6>
+                        <p class="card-text">{{ professional.Description }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Experience: {{ professional.experience }}
+                                <br>
+                                Area: {{ professional.pincode }}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

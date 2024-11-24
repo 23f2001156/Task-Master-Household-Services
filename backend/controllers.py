@@ -4,12 +4,12 @@ from flask import render_template
 from flask import request,redirect
 from backend.models import *
 from backend.models import db
-from flask import flash,url_for,blueprints,Blueprint
+from flask import flash,url_for
 from app import *
-from functools import wraps
 
 
-from datetime  import datetime ,timedelta
+from sqlalchemy import or_
+from datetime  import datetime 
 
 @app.route('/')
 def home_page():
@@ -36,8 +36,9 @@ def login_post():
     if not customer:
         flash('Either password is wrong or user does not exist')
         return redirect(url_for('login'))
-        
-   
+    if customer.is_blocked==True:
+        flash("Your Account is Blocked ,please contact Admin")    
+        return redirect(url_for('login'))
     session['costumer_id'] = customer.id
     session['user_role'] = customer.role
     
@@ -66,7 +67,7 @@ def register_post():
     db.session.add(costumer)
     
     db.session.commit()
-    flash('User Successfully Registered')
+    flash('User successfully Registered')
     return redirect(url_for('login'))
 @app.route('/professional_login')
 def professional_login():
@@ -135,7 +136,13 @@ def admin_dashboard():
     approved_professionals=Professional.query.filter_by(is_approved=True)
     return render_template('/admin/admin_dashboard.html', customers=customers,professionals=professionals,services=services,approved_professionals=approved_professionals)
 
-    
+@app.route('/admon_dashboard/view_professional/<int:prof_id>')
+def view_professional(prof_id):
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
+    professional=Professional.query.get(prof_id)
+    return render_template('/admin/view_professional.html',professional=professional)
 @app.route('/admin_dashboard/approve_professional/<int:prof_id>', methods=['POST'])
 def approve_professional(prof_id):
     if 'costumer_id' not in session or session.get('user_role') != 0:
@@ -287,7 +294,7 @@ def delete_service(service_id):
         return redirect(url_for('login'))
     
     service = Service.query.get(service_id)
-    
+    Service_request.query.filter_by(service_id=service_id).delete()
     
     db.session.delete(service)
     db.session.commit()
@@ -303,7 +310,7 @@ def delete_service(service_id):
 def ac_repair():
     ac_repair_services = Service.query.filter_by(name='AC repair').all() 
     available_professionals = Professional.query.filter_by(
-        service='AC_repair',
+        service='AC repair',
         is_approved=True,
         is_active=True
     ).first()
@@ -332,9 +339,9 @@ def cleannig():
 def plumbing():
     
       
-    plumbing_service=Service.query.filter_by(name='plumbering')
+    plumbing_service=Service.query.filter_by(name='plumbing')
     available_professionals = Professional.query.filter_by(
-        service='plumbering',
+        service='plumbing',
         is_approved=True,
         is_active=True
     ).first()
@@ -385,8 +392,36 @@ def book_service_post():
     flash('Service request submitted successfully')
     return redirect(url_for('costumer_dashboard'))
 
+@app.route('/costumer_dashboard/delete_request/<int:request_id>',methods=['POST'])
+def delete_request(request_id):
+    request=Service_request.query.get(request_id)
+    
+    if request.status=='Requested':
+            db.session.delete(request)
+            db.session.commit()
+            flash('Service Request Successfully Deleted')
 
 
+@app.route('/rate_service/<int:request_id>',methods=['GET'])
+def rate_service(request_id):
+    request = Service_request.query.get(request_id)
+    professional = Professional.query.get(request.professional_id)
+    return render_template('/costumer/review.html',request=request,professional=professional)
+    
+@app.route('/rate_service/<int:request_id>',methods=['POST'])
+def rate_service_post(request_id):
+    service_request = Service_request.query.get(request_id)
+    
+   
+    review = request.form.get('review')
+    rating = request.form.get('rating')
+ 
+    service_request.rating = rating
+    service_request.review = review
+    db.session.commit()
+    
+    flash("Review submitted successfully")
+    return redirect(url_for('costumer_dashboard'))
 @app.route('/professional_dashboard')
 def professional_dashboard():
     if 'professional_id' not in session:
@@ -440,3 +475,63 @@ def complete_service_request(request_id):
         flash('Invalid request')
     
     return redirect(url_for('costumer_dashboard'))
+
+
+@app.route('/search')
+def search():
+    
+    is_admin = 'costumer_id' in session and session.get('user_role') == 0
+    query = request.args.get('query')
+    search_by = request.args.get('search_by', 'all')  
+ 
+    
+    services = []
+    professionals = []
+    
+    if search_by == 'all' or search_by == 'services':
+        services = Service.query.filter(
+            or_(Service.name.ilike(f'%{query}%'),Service.Description.ilike(f'%{query}%'),Service.price.ilike(f'%{query}%')
+            )
+        ).all()
+    
+    if search_by == 'all' or search_by == 'professionals':
+        if is_admin:
+           
+            professionals = Professional.query.filter(
+                or_(
+                    Professional.full_name.ilike(f'%{query}%'),
+                    Professional.service.ilike(f'%{query}%'),
+                    Professional.Description.ilike(f'%{query}%'),
+                    Professional.experience.ilike(f'%{query}%'),
+                    Professional.pincode.ilike(f'%{query}%')
+                )
+            ).all()
+        else:
+           
+            professionals = Professional.query.filter(
+                or_(
+                    Professional.full_name.ilike(f'%{query}%'),
+                    Professional.service.ilike(f'%{query}%'),
+                    Professional.Description.ilike(f'%{query}%'),
+                    Professional.experience.ilike(f'%{query}%'),
+                    Professional.pincode.ilike(f'%{query}%')
+                )
+            ).filter_by(is_approved=True,is_active=True).all()
+    
+    elif search_by == 'location':
+       
+        professionals = Professional.query.filter(
+            Professional.pincode.ilike(f'%{query}%')
+        ).filter_by(is_approved=True,is_active=True).all()
+        
+        
+        service_names = set(prof.service for prof in professionals)
+        services = Service.query.filter(
+            Service.name.in_(service_names)
+        ).all()
+    
+   
+       
+    
+    return render_template('search.html',services=services,professionals=professionals,query=query,search_by=search_by)
+    
