@@ -275,15 +275,13 @@ def edit_service(service_id):
         service.Description = request.form.get('description')
         service.price = request.form.get('price')
         service.time_required = request.form.get('time')
+        db.session.commit()
+        flash('Service updated successfully')
+        return redirect(url_for('admin_dashboard'))
         
-        try:
-            db.session.commit()
-            flash('Service updated successfully')
-            return redirect(url_for('admin_dashboard'))
-        except Exception as e:
-            db.session.rollback()
-            flash('Error updating service')
-            return redirect(url_for('admin_dashboard'))
+        
+       
+        
     
     return render_template('/admin/edit_service.html', service=service)
 
@@ -373,24 +371,18 @@ def book_service_post():
     professional_id = request.form.get('professional_id')
     remarks = request.form.get('remarks')
     date_of_request = datetime.now().date()
-    
-  
-    
-    new_request = Service_request(
-        service_id=service_id,
-        costumer_id=session['costumer_id'],
-        professional_id=professional_id,
-        date_of_request=date_of_request,
-        
-        status='Requested',
-        remarks=remarks
-    )
+    new_request = Service_request(service_id=service_id,costumer_id=session['costumer_id'],professional_id=professional_id,date_of_request=date_of_request,status='Requested',remarks=remarks)
     
     db.session.add(new_request)
     db.session.commit()
-    
     flash('Service request submitted successfully')
     return redirect(url_for('costumer_dashboard'))
+    
+    
+  
+    
+    
+    
 
 @app.route('/costumer_dashboard/delete_request/<int:request_id>',methods=['POST'])
 def delete_request(request_id):
@@ -401,7 +393,7 @@ def delete_request(request_id):
             db.session.commit()
             flash('Service Request Successfully Deleted')
 
-
+    return redirect(url_for('costumer_dashboard'))
 @app.route('/rate_service/<int:request_id>',methods=['GET'])
 def rate_service(request_id):
     request = Service_request.query.get(request_id)
@@ -498,8 +490,7 @@ def search():
         if is_admin:
            
             professionals = Professional.query.filter(
-                or_(
-                    Professional.full_name.ilike(f'%{query}%'),
+                or_(Professional.full_name.ilike(f'%{query}%'),
                     Professional.service.ilike(f'%{query}%'),
                     Professional.Description.ilike(f'%{query}%'),
                     Professional.experience.ilike(f'%{query}%'),
@@ -535,3 +526,93 @@ def search():
     
     return render_template('search.html',services=services,professionals=professionals,query=query,search_by=search_by)
     
+    
+@app.route('/admin_dashboard/summary')
+def admin_summary():
+    if 'costumer_id' not in session or session.get('user_role') != 0:
+        flash('Unauthorized access')
+        return redirect(url_for('login'))
+    customer_stats = {
+        'total': Costumer.query.filter_by(role=1).count(),
+        'active': Costumer.query.filter_by(role=1, is_blocked=False).count(),
+        'blocked': Costumer.query.filter_by(role=1, is_blocked=True).count()
+    }
+    
+    professional_stats = {
+        'total': Professional.query.count(),
+        'active': Professional.query.filter_by(is_approved=True, is_active=True).count(),
+        'blocked': Professional.query.filter_by(is_active=False).count(),
+        'pending': Professional.query.filter_by(is_approved=False, is_rejected=False).count(),
+        
+    }
+    
+    service_stats = {
+        'total': Service_request.query.count(),
+        'pending': Service_request.query.filter_by(status='Requested').count(),
+        'accepted': Service_request.query.filter_by(status='Accepted').count(),
+        'completed': Service_request.query.filter_by(status='Completed').count(),
+        'rejected': Service_request.query.filter_by(status='Rejected').count()
+    }
+    
+   
+    
+   
+    return render_template('/admin/admin_summary.html',customer_stats=customer_stats,professional_stats=professional_stats,service_stats=service_stats)
+@app.route('/professional_dashboard/professional_summary')
+def professional_summary():
+    service_requests = Service_request.query.filter_by(
+        professional_id=session['professional_id']
+    ).all()
+    request_summary = {
+        'total': Service_request.query.filter_by(professional_id=session['professional_id']).count(),
+        'pending': Service_request.query.filter_by(professional_id=session['professional_id'], status='Requested').count(),
+        'accepted': Service_request.query.filter_by(professional_id=session['professional_id'], status='Accepted').count(),
+        'completed': Service_request.query.filter_by(professional_id=session['professional_id'], status='Completed').count(),
+        'rejected': Service_request.query.filter_by(professional_id=session['professional_id'], status='Rejected').count()
+    }
+    return render_template('/professional/professional_summary.html',service_requests=service_requests,request_summary=request_summary)
+
+
+
+@app.route('/edit_profile',methods=['GET','POST'])
+def edit_profile():
+    if 'costumer_id'in session:
+        user = Costumer.query.get(session['costumer_id'])
+        template = '/costumer/edit_profile.html'
+        user_type = 'costumer'
+    elif 'professional_id' in session:
+       
+        user = Professional.query.get(session['professional_id'])
+        template = '/professional/edit_profile.html'
+        user_type = 'professional'
+    else:
+        flash('Login to continue')
+        return redirect(url_for('login'))
+    if request.method == 'POST' and user_type=='costumer':
+       
+        user.full_name = request.form.get('full_name')
+        user.email = request.form.get('email')
+        user.pincode = request.form.get('pincode')
+        user.Address = request.form.get('address')
+        new_password = request.form.get('new_password')
+        if new_password:
+            user.password = new_password
+        
+        db.session.commit()
+        flash('Profile updated successfully')
+    elif  request.method == 'POST' and user_type=='professional':
+        user.full_name = request.form.get('full_name')
+        user.email = request.form.get('email')
+        user.pincode = request.form.get('pincode')
+        user.service = request.form.get('service')
+        user.experience = request.form.get('experience')
+        user.Description = request.form.get('description')
+        new_password = request.form.get('new_password')
+        if new_password:
+            user.password = new_password
+        
+        db.session.commit()
+        flash('Profile updated successfully')
+        return redirect(url_for('costumer_dashboard') if user_type == 'costumer' else 'professional_dashboard')
+    
+    return render_template(template, user=user)

@@ -59,6 +59,7 @@ h1{
           
           <th>Close Request</th>
           <th>Rating</th>
+          <th>Action</th>
           
       </tr>
   </thead>
@@ -95,10 +96,17 @@ h1{
                   
               {% endif %}
           </td>
-          
+        <td>
+          {% if request.status =='Requested' %}
+                        <form action="{{ url_for('delete_request', request_id=request.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" >Delete</button>
+                        </form>
+                        {% endif %}
+        </td>
       {% endfor %}
-      
+      </tr>
   </tbody>
+  1
 </table>
 
   

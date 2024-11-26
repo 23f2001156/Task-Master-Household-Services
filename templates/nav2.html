@@ -7,12 +7,36 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
       <a class="navbar-brand" href="#">Task Master</a>
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        {% if session.get('user_role') == 0 %}
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home </a>
+          <a class="nav-link" href="{{url_for('admin_dashboard')}}">Home </a>
         </li>
+        {% elif session.get('user_role') == 1 %}
+        <li class="nav-item active">
+          <a class="nav-link" href="{{url_for('costumer_dashboard')}}">Home </a>
+        </li>
+        {%else%}
+        <li class="nav-item active">
+          <a class="nav-link" href="{{url_for('professional_dashboard')}}">Home </a>
+        </li>
+        {%endif%}
+        {% if session.get('user_role') == 0 %}
         <li class="nav-item">
-          <a class="nav-link" href="#">Summary</a>
+          
+          <a class="nav-link" href="{{url_for('admin_summary')}}">Summay</a>
         </li>
+         {%elif 'professional_id' in session %}
+         <li class="nav-item">
+          
+          <a class="nav-link" href="{{url_for('professional_summary')}}">Summay</a>
+        </li>
+        {%else%}
+        <li class="nav-item">
+          
+          <a class="nav-link" href='#'>Summay</a>
+        </li>
+        {%endif%}
+
         <li class="nav-item">
           <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
         </li>
@@ -35,7 +59,9 @@
             
         </div>
     </form>{%endif%} &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      
+   
+      <a class="nav-link" href="{{url_for('edit_profile')}}"><button type="button" class="btn  btn-primary">Edit Profile</button></a>
+    
     </div>
   
   </nav>

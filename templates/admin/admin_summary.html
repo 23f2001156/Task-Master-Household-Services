@@ -1,0 +1,99 @@
+{% extends "layout2.html" %}
+{% block content %}
+
+<div class="container py-5">
+    <h1 class="">Admin Dashboard Summary</h1>
+    
+    <div class="row g-4">
+       
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-people-fill text-primary fs-2 me-3"></i>
+                        <h2 class="card-title h5 mb-0 fw-bold">Customer Statistics</h2>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Total Customers</span>
+                            <span class="badge bg-primary rounded-pill">{{ customer_stats.total }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Active Customers</span>
+                            <span class="badge bg-success rounded-pill">{{ customer_stats.active }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Blocked Customers</span>
+                            <span class="badge bg-danger rounded-pill">{{ customer_stats.blocked }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-briefcase-fill text-success fs-2 me-3"></i>
+                        <h2 class="card-title h5 mb-0 fw-bold">Professional Statistics</h2>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Total Professionals</span>
+                            <span class="badge bg-primary rounded-pill">{{ professional_stats.total }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Active Professionals</span>
+                            <span class="badge bg-success rounded-pill">{{ professional_stats.active }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Blocked Professionals</span>
+                            <span class="badge bg-danger rounded-pill">{{ professional_stats.blocked }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Pending Approvals</span>
+                            <span class="badge bg-warning rounded-pill">{{ professional_stats.pending }}</span>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-gear-fill text-info fs-2 me-3"></i>
+                        <h2 class="card-title h5 mb-0 fw-bold">Service Requests</h2>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Total Requests</span>
+                            <span class="badge bg-primary rounded-pill">{{ service_stats.total }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Pending Requests</span>
+                            <span class="badge bg-warning rounded-pill">{{ service_stats.pending }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Accepted Requests</span>
+                            <span class="badge bg-info rounded-pill">{{ service_stats.accepted }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Completed Requests</span>
+                            <span class="badge bg-success rounded-pill">{{ service_stats.completed }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Rejected Requests</span>
+                            <span class="badge bg-danger rounded-pill">{{ service_stats.rejected }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+{% endblock %}
