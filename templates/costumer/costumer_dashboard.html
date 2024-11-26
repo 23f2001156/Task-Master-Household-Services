@@ -19,9 +19,10 @@ h1{
         <div class="card" style="width: 18rem;">
   <div class="card-body">
     <img src="/static/images/ac repair2.jpeg">
-    <h6 class="card-subtitle mb-2 text-muted"></h6>
+
+    <h5>AC Repair</h5>
     
-    <a href="/costumer_dashboard/ac_repair" class="card-link">Card link</a>
+    <a href="/costumer_dashboard/ac_repair" class="card-link">Click here</a>
    
   </div>
 </div>
@@ -31,7 +32,8 @@ h1{
             <div class="card-body">
              
               <img src="/static/images/cleaning.jpeg">
-              <a href="/costumer_dashboard/cleaning" class="card-link">Another link</a>
+              <h5>Cleaning Services</h5>
+              <a href="/costumer_dashboard/cleaning" class="card-link">Click here</a>
             </div>
           </div>
       </div>
@@ -39,7 +41,8 @@ h1{
         <div class="card" style="width: 18rem;">
             <div class="card-body">
              <img src="/static/images/plumber.jpeg">
-              <a href="costumer_dashboard/plumbing" class="card-link">Another link</a>
+             <h5>Plumbing Services</h5>
+              <a href="costumer_dashboard/plumbing" class="card-link">Click here</a>
             </div>
           </div>
       </div>
@@ -101,12 +104,13 @@ h1{
                         <form action="{{ url_for('delete_request', request_id=request.id) }}" method="POST" style="display: inline;">
                             <button type="submit" class="btn btn-danger btn-sm" >Delete</button>
                         </form>
+                        <a href="{{ url_for('edit_request', request_id=request.id) }}" class="btn btn-info btn-sm">Edit</a>
                         {% endif %}
         </td>
       {% endfor %}
       </tr>
   </tbody>
-  1
+  
 </table>
 
   

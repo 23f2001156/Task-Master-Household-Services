@@ -67,7 +67,7 @@ h1{
             {%endfor%}
         </tbody>
     </table>
-
+<br>
 
     <h4>Customers List</h4>
    
@@ -105,7 +105,7 @@ h1{
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table><br>
     <h4> Unverified Professional List</h4>
 <table class="admin-table">
     <thead>
@@ -137,7 +137,7 @@ h1{
         </tr>
         {%endfor%}
     </tbody>
-</table>
+</table><br>
 <h4>Approved Professionals</h4>
 <table class="admin-table">
     <thead>
@@ -172,7 +172,35 @@ h1{
     </tbody>
 
 
-</table>
-
+</table><br>
+<h3>Service Requests</h3>
+<table class="admin-table">
+  <thead>
+      <tr>
+          <th>Service ID</th>
+          <th>Professional</th>
+          <th>Costumer Name</th>
+          <th>Request Date</th>
+          <th>Completion Date</th>
+          <th>Status</th>
+         
+          
+       
+          <th>Rating</th>
+          
+          
+      </tr>
+  </thead>
+  <tbody>
+      {% for request in service_requests %}
+      <tr>
+          <td>{{ request.id }}</td>
+          <td>{{ request.professional.full_name }}</td>
+          <td>{{request.costumer.full_name}}</td>
+          <td>{{ request.date_of_request.strftime('%Y-%m-%d') }}</td>
+          <td>{{ request.date_of_completion.strftime('%Y-%m-%d') if request.date_of_completion else 'Pending' }}</td>
+          <td>{{request.status}}</td>
+          <td>{{request.rating}}</td>{%endfor%}
+          </tr></tbody></table>
 </div>
 {% endblock %}

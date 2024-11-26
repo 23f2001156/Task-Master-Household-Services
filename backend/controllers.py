@@ -16,6 +16,9 @@ def home_page():
     if 'costumer_id' not in session:
         return render_template("index.html")
     return render_template('index.html', csotumer=Costumer.query.get(session['costumer_id']))
+@app.route('/contact_page')
+def contact_page():
+    return render_template('contact.html')
 @app.route('/login')
 def login():
     
@@ -38,7 +41,7 @@ def login_post():
         return redirect(url_for('login'))
     if customer.is_blocked==True:
         flash("Your Account is Blocked ,please contact Admin")    
-        return redirect(url_for('login'))
+        return redirect(url_for('contact_page'))
     session['costumer_id'] = customer.id
     session['user_role'] = customer.role
     
@@ -134,7 +137,8 @@ def admin_dashboard():
     professionals=Professional.query.filter_by(is_approved=False)
     services=Service.query.all()
     approved_professionals=Professional.query.filter_by(is_approved=True)
-    return render_template('/admin/admin_dashboard.html', customers=customers,professionals=professionals,services=services,approved_professionals=approved_professionals)
+    service_requests=Service_request.query.all()
+    return render_template('/admin/admin_dashboard.html', customers=customers,professionals=professionals,services=services,approved_professionals=approved_professionals,service_requests=service_requests)
 
 @app.route('/admon_dashboard/view_professional/<int:prof_id>')
 def view_professional(prof_id):
@@ -378,7 +382,24 @@ def book_service_post():
     flash('Service request submitted successfully')
     return redirect(url_for('costumer_dashboard'))
     
+
     
+
+   
+@app.route('/costumer_dashboard/edit_request/<int:request_id>', methods=['GET', 'POST'])
+def edit_request(request_id):  
+    service_request = Service_request.query.get(request_id)
+    if request.method == 'POST':
+        
+        service_request.professional_id = request.form.get('professional_id')
+        service_request.remarks = request.form.get('remarks')
+        db.session.commit()
+        flash('Service request updated successfully')
+        return redirect(url_for('costumer_dashboard'))
+    professionals = Professional.query.filter_by(service=service_request.service.name, is_approved=True, is_active=True).all()
+    
+    return render_template('/costumer/edit_service_request.html', service_request=service_request, professionals=professionals)
+
   
     
     
@@ -516,10 +537,7 @@ def search():
         ).filter_by(is_approved=True,is_active=True).all()
         
         
-        service_names = set(prof.service for prof in professionals)
-        services = Service.query.filter(
-            Service.name.in_(service_names)
-        ).all()
+        
     
    
        
@@ -565,8 +583,8 @@ def professional_summary():
     ).all()
     request_summary = {
         'total': Service_request.query.filter_by(professional_id=session['professional_id']).count(),
-        'pending': Service_request.query.filter_by(professional_id=session['professional_id'], status='Requested').count(),
-        'accepted': Service_request.query.filter_by(professional_id=session['professional_id'], status='Accepted').count(),
+        'pending': Service_request.query.filter_by(professional_id=session['professional_id'], status='Accepted').count(),
+        
         'completed': Service_request.query.filter_by(professional_id=session['professional_id'], status='Completed').count(),
         'rejected': Service_request.query.filter_by(professional_id=session['professional_id'], status='Rejected').count()
     }

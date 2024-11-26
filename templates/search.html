@@ -68,6 +68,12 @@
                                 Area: {{ professional.pincode }}
                             </small>
                         </p>
+                        {% if session.get('user_role') == 0 %}
+                        {%if professional.is_active==True%}
+                        <p class="card-text">Stauts-Active</p>
+                            {%else%}<p>Status- Blocked</p>
+                        {%endif%}
+                        {%endif%}
                     </div>
                 </div>
             </div>

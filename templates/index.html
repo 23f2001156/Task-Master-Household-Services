@@ -2,7 +2,66 @@
 {%block title%}
     home-Taskmaster
 {%endblock%}
+{%block style%}
+<link rel="stylesheet" href="/static/css/style.css">
+{%endblock%}
+{%block content%}<br>
+<div class="taskmaster">
+    <div class="container">
+        <h1 class="display-4 mb-4">Taskmaster Household Services</h1>
+        <p class="lead mb-5">Professional Cleaning, Plumbing, and AC Repair Services</p>
+   
+    </div>
+</div>
 
-{%block content%}
-Hello {{nmae}}
+<div id="services" class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">🧹</div>
+                    <h3>Home Cleaning</h3>
+                    <p>Comprehensive cleaning services for a spotless home environment</p>
+                    <ul class="list-unstyled">
+                        <li>Deep cleaning</li>
+                        <li>Regular maintenance</li>
+                        <li>Kitchen Cleaning</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Plumbing Services</h3>
+                    <p>Expert plumbing repairs and maintenance for your home</p>
+                    <ul class="list-unstyled">
+                        <li>Leak detection</li>
+                        <li>Pipe repairs</li>
+                        <li>Clogged Toilets</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">❄️</div>
+                    <h3>AC Repair</h3>
+                    <p>Professional air conditioning repair and maintenance</p>
+                    <ul class="list-unstyled">
+                        <li>Diagnostic services</li>
+                        <li>Repair and replacement</li>
+                        <li>Regular maintenance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="contact-section text-center">
+    <div class="container">
+     
+        <a href="{{url_for('contact_page')}}" class="btn btn-cta">Contact Us</a>
+    </div>
+</div>
 {%endblock%}
