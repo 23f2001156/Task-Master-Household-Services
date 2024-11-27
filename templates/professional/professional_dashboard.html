@@ -40,7 +40,29 @@
                         {% endfor %}
                     </tbody>
                 </table>
+<h4>Ongoing Services</h4>
+<table class="table">
+    <thead>
+ <tr>
+<th>Request ID</th>
+<th>Service</th>
+<th>Customer</th>
+<th>Date Requested</th>
+<th>Customer Address</th> 
+<th>Remarks</th></tr></thead>
+{%for request in service_requests%}
+{%if request.status=='Accepted'%}
+<tbody>
+<td>{{ request.id }}</td>
+<td>{{ request.service.name }}</td>
+<td>{{ request.costumer.full_name }}</td>
+<td>{{ request.date_of_request }}</td>
+<td>{{ request.costumer.Address }}</td>
+<td>{{ request.remarks }}</td>
 
+{%endif%}
+{%endfor%}
+</tbody></table>
     <h4>Closed Services</h4>
     <table class="table table-striped">
         <thead>
@@ -87,6 +109,7 @@
             {% endfor %}
         </tbody>
     </table>
+    
 </div>
 
 {%endblock%}
