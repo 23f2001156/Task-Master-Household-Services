@@ -27,7 +27,7 @@
     {%if messages%}
         <div class="messages">
         {%for message in messages%}
-           {%if 'success' in message.lower() or 'accept' in message.lower() or 'complete' in message.lower() %}
+           {%if 'success' in message.lower() or 'accept' in message.lower() or 'complete' in message.lower() or 'approve' in message.lower() %}
             <div class="alert alert-success alter-dismissable fade show" role="alert">
                 {{message}}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
